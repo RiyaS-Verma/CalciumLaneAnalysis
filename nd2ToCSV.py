@@ -1,6 +1,6 @@
 import os
 import sys
-os.environ['OPENBLAS_NUM_THREADS'] = '60'
+os.environ['OPENBLAS_NUM_THREADS'] = '60' #needed for slurm numpy executions
 import pandas as pd
 import numpy as np
 import sklearn
@@ -13,12 +13,12 @@ import statistics
 from pylab import *
 from skimage import io
 from sklearn import linear_model
-from pathlib import Path 
+from pathlib import Path
 from scipy.signal import savgol_filter
 from skimage.transform import rescale
 from skimage.exposure import rescale_intensity
 from skimage.exposure import rescale_intensity
-from PIL import Image 
+from PIL import Image
 from skimage.transform import hough_line, hough_line_peaks
 from skimage.feature import canny
 from skimage.draw import line as draw_line
@@ -40,6 +40,23 @@ from scipy import ndimage as ndi
 from skimage.segmentation import flood, flood_fill
 from collections import deque
 import numpy as np
+
+#adjust this main function to be compatible with snakemake
+def main():
+    if not os.path.exists('csv'):
+        os.makedirs('csv')
+    csvdir = directory+"csv/"
+    tifdir = directory+"tifs/"
+    tifs = Path(tifdir).glob('*.tiff')
+    fps = 100 #hardcoded for riya's samples make params snakemake
+    for tif in tifs:
+        filename = str(os.path.basename(tif).split(".ome.tiff")[0])
+        image_path = directory+"tifs/"+filename+".ome.tiff"
+        lanes,image = findLanes(image_path, filename)
+        islands = extract_cell_islands(lanes)
+        meanDF = extractROIMeanIntensity(islands, image)
+        df_csv = addTimeToCSV(meanDF,fps)
+        df_csv.to_csv(filename+'.csv', index=False)
 
 
 # This method finds the brightest frames, uses the frame to detect ROIs using scipy image filtering
@@ -139,7 +156,7 @@ def extract_cell_islands(mat) -> list:
 
 
 # This method has contributions from borislav milkov
-## This method isolates the mean frame intensity for each 
+## This method isolates the mean frame intensity for each
 def extractROIMeanIntensity(ROIs, image):
     all_roi_means = [[] for _ in range(len(ROIs))]
     res_dict = {}
@@ -160,5 +177,5 @@ def extractROIMeanIntensity(ROIs, image):
 
 def addTimeToCSV(ROI_df,fps):
     #hardcoded for 100fps videos will need to be modified to convert fps to sec idx
-    ROI_df_t = ROI_df.insert(0, column='time',value=ROI_df.index * (1000/fps))
-    return ROI_df_t 
+    ROI_df.insert(0, column='time',value=ROI_df.index * (1000/fps))
+    return ROI_df
