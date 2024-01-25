@@ -69,7 +69,7 @@ def findLanes(image,filename):
     p21, p98 = np.percentile(image[brightest_frame[0]], (2, 98))
     print("Rescaling image")
     rescaled_image = rescale_intensity(image[brightest_frame[0]], in_range=(p21, p98))
-    plt.imsave(filename+'_brightestframe_contrasted.pdf',lanes_cleaned, cmap='gray')
+    plt.imsave(filename+'_brightestframe_contrasted.pdf',lrescaled_image, cmap='gray')
     print("Buttering image")
     buttering = butterworth(rescaled_image)
     print("Smoothing image")
