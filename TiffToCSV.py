@@ -52,7 +52,7 @@ def main():
     for tif in tifs:
         filename = str(os.path.basename(tif).split(".ome.tiff")[0])
         image_path = directory+"tifs/"+filename+".ome.tiff"
-        lanes,image = findLanes(image_path, filename)
+        lanes = findLanes(image_path, filename)
         islands = extract_cell_islands(lanes)
         meanDF = extractROIMeanIntensity(islands, image)
         df_csv = addTimeToCSV(meanDF,fps)
@@ -69,6 +69,7 @@ def findLanes(image,filename):
     p21, p98 = np.percentile(image[brightest_frame[0]], (2, 98))
     print("Rescaling image")
     rescaled_image = rescale_intensity(image[brightest_frame[0]], in_range=(p21, p98))
+    plt.imsave(filename+'_brightestframe_contrasted.pdf',lanes_cleaned, cmap='gray')
     print("Buttering image")
     buttering = butterworth(rescaled_image)
     print("Smoothing image")
@@ -78,6 +79,7 @@ def findLanes(image,filename):
     thresh = smooth > thresh_value
     print("Cleaning lanes")
     lanes_cleaned = morphology.remove_small_objects(thresh,5000)
+    plt.imsave(filename+'_lanes_detected.pdf',lanes_cleaned, cmap='gray')
     return lanes_cleaned, image
 
 # This method has contributions from mohit kumar and borislav milkov
