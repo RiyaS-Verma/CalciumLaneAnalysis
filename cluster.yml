@@ -1,0 +1,16 @@
+__default__:
+  time: '24:00:00'
+  mem: '8gb'
+  tasks: 1
+  cores: 1
+  logout: 'slurm_logs/slurm_logs_{rule}_{wilcards.sample}.out'
+  logerror: 'slurm_logs/slurm_logs_{rule}_{wilcards.sample}.err'
+  acc: mlmccain_913
+
+nd2tiff:
+  cores: 16
+  mem: '16gb'
+
+getCSVtiff:
+  cores: 16
+  mem: '32gb'

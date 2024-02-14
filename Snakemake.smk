@@ -1,7 +1,8 @@
 from glob import glob
 from numpy import unique
+os.environ['OPENBLAS_NUM_THREADS'] = '60' #needed for slurm numpy executions
 
-nd2 = glob('{}/*'.format(config['nd2Dir']))#gets unique filesnames
+nd2 = glob('{}/*'.format(config['nd2Dir'])) #gets unique filesnames
 samples = []
 for i in nd2:
   fileName = i.replace('{}/'.format(config['nd2Dir']), '') #format adds the files into {}.
@@ -14,7 +15,7 @@ rule all:
   input:
     expand('csv/{sample}.csv', file=files)
 
-rule nd2tiff:
+rule nd2tiff: #make conda env for bftools to run from
   input:
     nd2 = config['nd2Dir'] + '/{sample}' + config['filesuff'],
   output:
@@ -22,7 +23,11 @@ rule nd2tiff:
   params:
     bftools = config['pathtobftools']
   shell:
-    'BF_MAX_MEM=2G {params.bftools}/bfconvert -no-upgrade -bigtiff -compression zlib {input.nd2} {output.tiff}'
+  'set +u && '
+  'module purge && '
+  'eval "$(conda shell.bash hook)" && '
+  'conda activate bfconvert && '
+  'BF_MAX_MEM=2G {params.bftools}/bfconvert {input.nd2} {output.tiff}'
 
 rule getCSVtiff:
   input:
