@@ -15,19 +15,17 @@ rule all:
   input:
     expand('csv/{sample}.csv', file=files)
 
-rule nd2tiff: #make conda env for bftools to run from
+rule nd2tiff: 
   input:
     nd2 = config['nd2Dir'] + '/{sample}' + config['filesuff'],
   output:
     tiff = 'tifs/{sample}.tif',
-  params:
-    bftools = config['pathtobftools']
   shell:
   'set +u && '
   'module purge && '
   'eval "$(conda shell.bash hook)" && '
   'conda activate bfconvert && '
-  'BF_MAX_MEM=2G {params.bftools}/bfconvert {input.nd2} {output.tiff}'
+  'BF_MAX_MEM=2G bfconvert {input.nd2} {output.tiff}'
 
 rule getCSVtiff:
   input:
@@ -38,3 +36,5 @@ rule getCSVtiff:
     getcsv = config['pathtocsvpy']
   shell:
     'python {params.getcsv} {input.tiff} {output.csv}'
+
+rule multilineage: 
