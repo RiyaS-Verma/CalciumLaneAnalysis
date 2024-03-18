@@ -1,3 +1,4 @@
-wordDir: /path/to/work/dir
+workDir: /path/to/work/dir
 nd2Dir: /path/to/nd2/dir
 
+multilineagePath: /path/to/scripts

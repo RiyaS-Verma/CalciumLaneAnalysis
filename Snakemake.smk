@@ -13,28 +13,38 @@ print(samples)
 
 rule all:
   input:
-    expand('csv/{sample}.csv', file=files)
+    expand('tifs/{sample}.tif', sample=samples)
 
 rule nd2tiff: 
   input:
     nd2 = config['nd2Dir'] + '/{sample}' + config['filesuff'],
   output:
-    tiff = 'tifs/{sample}.tif',
+    tiff = config['workDir'] +'tifs/{sample}.tif',
   shell:
   'set +u && '
   'module purge && '
   'eval "$(conda shell.bash hook)" && '
   'conda activate bfconvert && '
-  'BF_MAX_MEM=2G bfconvert {input.nd2} {output.tiff}'
+  'bfconvert {input.nd2} {output.tiff}'
 
 rule getCSVtiff:
   input:
-    tiff = 'tifs/{sample}.tif',
+    tiff = config['workDir'] +'tifs/{sample}.tif',
   output:
-    csv = 'csv/{sample}.csv',
+    brightest_frame = config['workDir'] + 'figures/{sample}__brightestframe_contrasted.pdf'
+    lanes_cleaned = config['workDir'] + 'figures/{sample}_lanes_detected.pdf'
+    csv = config['workDir'] + 'csv/{sample}.csv',
   params:
     getcsv = config['pathtocsvpy']
   shell:
-    'python {params.getcsv} {input.tiff} {output.csv}'
+    'python {params.getcsv} {input.tiff} {output.brightest_frame} {output.lanes_cleaned} {output.csv}'
 
 rule multilineage: 
+  input:
+    csv = config['workDir'] + 'csv/{sample}.csv',
+  output: 
+    plots = config['workDir'] + 'plots/',
+    filtered = config['workDir'] + 'filtered_traces/',
+    datacsv = config['workDir'] + 'stats.xlxs'
+
+
