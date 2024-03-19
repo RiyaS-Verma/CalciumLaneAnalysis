@@ -12,5 +12,5 @@ nd2tiff:
   mem: '16gb'
 
 getCSVtiff:
-  cores: 16
+  cores: 32
   mem: '32gb'

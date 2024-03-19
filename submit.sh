@@ -1,5 +1,7 @@
 #!/bin/bash
 export REPO_PATH=/project/mlmccain_913/riya/calcium_analysis/snakemake
+os.environ['OPENBLAS_NUM_THREADS'] = '1' #cluter user openbladnumthreads has to be 1
+
 if [ ! -e “slurm_logs” ]
 then
   mkdir “slurm_logs”

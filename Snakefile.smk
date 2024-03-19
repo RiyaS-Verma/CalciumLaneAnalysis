@@ -1,6 +1,6 @@
 from glob import glob
 from numpy import unique
-os.environ['OPENBLAS_NUM_THREADS'] = '60' #needed for slurm numpy executions
+os.environ['OPENBLAS_NUM_THREADS'] = '1' #needed for slurm numpy executions
 
 nd2 = glob('{}/*'.format(config['nd2Dir'])) #gets unique filesnames
 samples = []
@@ -13,13 +13,13 @@ print(samples)
 
 rule all:
   input:
-    expand('tifs/{sample}.tif', sample=samples)
+    expand('tifs/{sample}.ome.tiff', sample=samples)
 
-rule nd2tiff: 
+rule nd2tiff:
   input:
     nd2 = config['nd2Dir'] + '/{sample}' + config['filesuff'],
   output:
-    tiff = config['workDir'] +'tifs/{sample}.tif',
+    tiff = config['workDir'] +'tifs/{sample}.ome.tiff',
   shell:
   'set +u && '
   'module purge && '
@@ -39,12 +39,10 @@ rule getCSVtiff:
   shell:
     'python {params.getcsv} {input.tiff} {output.brightest_frame} {output.lanes_cleaned} {output.csv}'
 
-rule multilineage: 
+rule multilineage:
   input:
     csv = config['workDir'] + 'csv/{sample}.csv',
-  output: 
+  output:
     plots = config['workDir'] + 'plots/',
     filtered = config['workDir'] + 'filtered_traces/',
     datacsv = config['workDir'] + 'stats.xlxs'
-
-

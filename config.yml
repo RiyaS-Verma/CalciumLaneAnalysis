@@ -1,4 +1,6 @@
-workDir: /path/to/work/dir
+workDir: /path/to/work/dir/
 nd2Dir: /path/to/nd2/dir
+filesuff: '.nd2'
 
+pathtocsvpy: /path/to/TiffToCSV.py
 multilineagePath: /path/to/scripts
