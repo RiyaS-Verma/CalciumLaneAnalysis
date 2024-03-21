@@ -13,7 +13,7 @@ print(samples)
 
 rule all:
   input:
-    expand('tifs/{sample}.ome.tiff', sample=samples)
+    expand(config['workDir'] +'tifs/{sample}.ome.tiff', sample=samples)
 
 rule nd2tiff:
   input:
@@ -21,18 +21,18 @@ rule nd2tiff:
   output:
     tiff = config['workDir'] +'tifs/{sample}.ome.tiff',
   shell:
-  'set +u && '
-  'module purge && '
-  'eval "$(conda shell.bash hook)" && '
-  'conda activate bfconvert && '
-  'bfconvert {input.nd2} {output.tiff}'
+    'set +u && '
+    'module purge && '
+    'eval "$(conda shell.bash hook)" && '
+    'conda activate bfconvert && '
+    'bfconvert --nobigtiff {input.nd2} {output.tiff}'
 
 rule getCSVtiff:
   input:
     tiff = config['workDir'] +'tifs/{sample}.tif',
   output:
-    brightest_frame = config['workDir'] + 'figures/{sample}__brightestframe_contrasted.pdf'
-    lanes_cleaned = config['workDir'] + 'figures/{sample}_lanes_detected.pdf'
+    brightest_frame = config['workDir'] + 'figures/{sample}__brightestframe_contrasted.pdf',
+    lanes_cleaned = config['workDir'] + 'figures/{sample}_lanes_detected.pdf',
     csv = config['workDir'] + 'csv/{sample}.csv',
   params:
     getcsv = config['pathtocsvpy']
