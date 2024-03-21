@@ -17,4 +17,5 @@ snakemake \
 --cluster-config $REPO_PATH/cluster.yaml \
 --cores 50 \
 --jobs 30 \
+--cluster 'sbatch --ntasks={cluster.tasks} --cpus-per-task={cluster.cores} --mem={cluster.mem} --time={cluster.time} --account={cluster.acc} --output {cluster.logout} --error {cluster.logerror}' \
 $@
