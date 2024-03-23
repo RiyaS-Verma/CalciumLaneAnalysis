@@ -25,6 +25,7 @@ rule nd2tiff:
     'module purge && '
     'eval "$(conda shell.bash hook)" && '
     'conda activate bfconvert && '
+    'export JAVA_OPTS="-Xmx32g -XX:ParallelGCThreads=16" &&'
     'BF_MAX_MEM=24g bfconvert {input.nd2} {output.tiff}'
 
 rule getCSVtiff:
