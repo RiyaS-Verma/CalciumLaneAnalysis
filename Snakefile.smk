@@ -25,7 +25,7 @@ rule nd2tiff:
     'module purge && '
     'eval "$(conda shell.bash hook)" && '
     'conda activate bfconvert && '
-    'bfconvert --nobigtiff {input.nd2} {output.tiff}'
+    'BF_MAX_MEM=24g bfconvert {input.nd2} {output.tiff}'
 
 rule getCSVtiff:
   input:
