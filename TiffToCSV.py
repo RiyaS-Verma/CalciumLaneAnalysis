@@ -41,13 +41,24 @@ from skimage.segmentation import flood, flood_fill
 from collections import deque
 import numpy as np
 
+# Invoke main function with input and output directory paths
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python script.py input_directory output_directory")
+        sys.exit(1)
+    input_directory = sys.argv[1]
+    output_directory = sys.argv[2]
+    main(input_directory, output_directory)
+
 #adjust this main function to be compatible with snakemake
-def main():
-    if not os.path.exists('csv'):
-        os.makedirs('csv')
-    csvdir = directory+"csv/"
-    tifdir = directory+"tifs/"
-    tifs = Path(tifdir).glob('*.tiff')
+
+# Main function to convert .nd2 files to .ome.tiff
+def main(input_directory, output_directory):
+    # Ensure output directories exist
+    os.makedirs(os.path.join(output_directory, "csv"), exist_ok=True)
+    os.makedirs(os.path.join(output_directory, "tifs"), exist_ok=True)
+    # Get list of .tiff files in the input directory
+    tifs = Path(input_directory).glob('*.tiff')
     fps = 100 #hardcoded for riya's samples make params snakemake
     for tif in tifs:
         filename = str(os.path.basename(tif).split(".ome.tiff")[0])
